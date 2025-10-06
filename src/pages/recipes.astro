@@ -1,0 +1,202 @@
+---
+import fetchApi from '../lib/strapi';
+import type { Recipe } from '../interfaces/recipe';
+
+const recipes = await fetchApi<Recipe[]>({
+  endpoint: 'recipes',
+  query: {
+	"populate[0]": "author",
+	"populate[1]": "servingSize",
+	"populate[2]": "mainDisplay",
+  },
+  wrappedByKey: 'data',
+});
+console.log(recipes, 'recipes');
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro Recipes</title>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Astro Recipes</h1>
+			<div class="recipes-grid">
+			  {
+				recipes.map((recipe) => (
+				  <article class="recipe-card">
+					<a href={`/recipes/${recipe.name}/`} class="recipe-link">
+					  <div class="recipe-image">
+						<img 
+						  src={recipe.mainDisplay?.url || recipe.mainDisplay?.formats?.medium?.url || '/placeholder_pastry.png'} 
+						  alt={recipe.mainDisplay?.alternativeText || recipe.name}
+						  loading="lazy"
+						/>
+					  </div>
+					  <div class="recipe-content">
+						<h2 class="recipe-name">{recipe.name}</h2>
+						<div class="recipe-serving">
+						  <span class="serving-label">Serves:</span>
+						  <span class="serving-value">{recipe.servingSize?.value} {recipe.servingSize?.unit}</span>
+						</div>
+					  </div>
+					</a>
+				  </article>
+				))
+			  }
+			</div>
+		</div>
+
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+				line-height: 1.6;
+				color: #333;
+				background-color: #f8f9fa;
+			}
+
+			.container {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 2rem 1rem;
+			}
+
+			h1 {
+				text-align: center;
+				margin-bottom: 3rem;
+				font-size: 2.5rem;
+				color: #2c3e50;
+				font-weight: 700;
+			}
+
+			.recipes-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+				gap: 2rem;
+				justify-items: center;
+			}
+
+			.recipe-card {
+				width: 100%;
+				max-width: 360px;
+				background: white;
+				border-radius: 12px;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+				overflow: hidden;
+				transition: transform 0.3s ease, box-shadow 0.3s ease;
+			}
+
+			.recipe-card:hover {
+				transform: translateY(-4px);
+				box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+			}
+
+			.recipe-link {
+				text-decoration: none;
+				color: inherit;
+				display: block;
+				height: 100%;
+			}
+
+			.recipe-image {
+				width: 100%;
+				height: 240px;
+				overflow: hidden;
+				position: relative;
+			}
+
+			.recipe-image img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				transition: transform 0.3s ease;
+			}
+
+			.recipe-card:hover .recipe-image img {
+				transform: scale(1.05);
+			}
+
+			.recipe-content {
+				padding: 1.5rem;
+			}
+
+			.recipe-name {
+				font-size: 1.25rem;
+				font-weight: 600;
+				color: #2c3e50;
+				margin-bottom: 0.75rem;
+				line-height: 1.4;
+				display: -webkit-box;
+				-webkit-line-clamp: 2;
+				-webkit-box-orient: vertical;
+				overflow: hidden;
+			}
+
+			.recipe-serving {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				color: #666;
+				font-size: 0.9rem;
+			}
+
+			.serving-label {
+				font-weight: 500;
+				color: #7f8c8d;
+			}
+
+			.serving-value {
+				font-weight: 600;
+				color: #e74c3c;
+				background: #fdf2f2;
+				padding: 0.25rem 0.5rem;
+				border-radius: 4px;
+			}
+
+			/* Responsive design */
+			@media (max-width: 768px) {
+				.container {
+					padding: 1rem;
+				}
+
+				h1 {
+					font-size: 2rem;
+					margin-bottom: 2rem;
+				}
+
+				.recipes-grid {
+					grid-template-columns: 1fr;
+					gap: 1.5rem;
+				}
+
+				.recipe-card {
+					max-width: 100%;
+				}
+			}
+
+			@media (max-width: 480px) {
+				.recipe-image {
+					height: 200px;
+				}
+
+				.recipe-content {
+					padding: 1rem;
+				}
+
+				.recipe-name {
+					font-size: 1.1rem;
+				}
+			}
+		</style>
+	</body>
+</html>
