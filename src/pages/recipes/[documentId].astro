@@ -1,0 +1,281 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import fetchApi from '../../lib/strapi';
+import type { Recipe } from '../../interfaces/recipe';
+import { marked } from 'marked';
+
+export async function getStaticPaths() {
+    const recipes = await fetchApi<Pick<Recipe, 'documentId'>[]>({
+        endpoint: 'recipes',
+        wrappedByKey: 'data',
+    });
+
+    return recipes.map(recipe => ({
+        params: { documentId: recipe.documentId }
+    }));
+}
+
+const { documentId } = Astro.params;
+
+if (!documentId) {
+    return Astro.redirect('/404');
+}
+
+const recipe = await fetchApi<Recipe>({
+    endpoint: `recipes/${documentId}`,
+    query: {
+        'populate[0]': 'ingredientGroups.ingredients.amount',
+        'populate[1]': 'steps',
+        'populate[2]': 'author',
+        'populate[3]': 'servingSize',
+        'populate[4]': 'mainDisplay'
+    },
+    wrappedByKey: 'data',
+    wrappedByList: false,
+});
+
+if (!recipe) {
+    return Astro.redirect('/404');
+}
+
+const groupedSteps = recipe.steps.reduce((acc, step) => {
+    if (!acc[step.stage]) {
+        acc[step.stage] = [];
+    }
+    acc[step.stage].push(step);
+    return acc;
+}, {} as Record<string, typeof recipe.steps>);
+
+---
+
+<Layout title={recipe.name}>
+    <div class="container">
+        <article class="recipe-details">
+            <header class="recipe-header">
+                <h1 class="recipe-title">{recipe.name}</h1>
+                <p class="recipe-author">By {recipe.author?.name || 'Unknown'}</p>
+                <div class="recipe-meta">
+                    <span>Serves: {recipe.servingSize?.value} {recipe.servingSize?.unit}</span>
+                </div>
+            </header>
+
+            <div class="recipe-body">
+                <section class="ingredients-section">
+                    <div class="ingredients-card">
+                        <div class="ingredients-content">
+                            <h2 class="section-title">Ingredients</h2>
+                            <div class="ingredient-columns">
+                                {recipe.ingredientGroups.map(group => (
+                                    <div class="ingredient-group">
+                                        <h3 class="group-name">{group.groupName}</h3>
+                                        <ul>
+                                            {group.ingredients.map(ingredient => (
+                                                <li>
+                                                    <span class="ingredient-name">{ingredient.name}</span>
+                                                    <span class="ingredient-amount">
+                                                        {ingredient.amount.length > 1 ? (
+                                                            <select>
+                                                                {ingredient.amount.map(amount => (
+                                                                    <option>{amount.value} {ingredient.unit} ({amount.level})</option>
+                                                                ))}
+                                                            </select>
+                                                        ) : (
+                                                            `${ingredient.amount[0].value} ${ingredient.unit}`
+                                                        )}
+                                                    </span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div class="recipe-main-image">
+                            <img 
+                                src={recipe.mainDisplay?.url || recipe.mainDisplay?.formats?.medium?.url || '/placeholder_pastry.png'}
+                                alt={recipe.mainDisplay?.alternativeText || recipe.name}
+                            />
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="steps-section">
+                    <h2 class="section-title">Instructions</h2>
+                    {Object.entries(groupedSteps).map(([stage, steps]) => (
+                        <details class="stage-group" open>
+                            <summary class="stage-name">{stage}</summary>
+                            <div class="steps-list">
+                                {steps.map(step => (
+                                    <div class="step">
+                                        <div class="step-header">
+                                            <h4 class="step-title">{step.title}</h4>
+                                            {step.duration && <span class="step-duration">{step.duration} mins</span>}
+                                        </div>
+                                        <div class="step-description" set:html={marked.parse(step.description)}></div>
+                                    </div>
+                                ))}
+                            </div>
+                        </details>
+                    ))}
+                </section>
+            </div>
+        </article>
+    </div>
+    <style>
+		.recipe-details {
+			max-width: 900px;
+			margin: 2rem auto;
+			background: #fff;
+			padding: 2rem;
+			border-radius: 8px;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+		}
+
+		.recipe-header {
+			text-align: center;
+			margin-bottom: 2rem;
+			border-bottom: 1px solid #eee;
+			padding-bottom: 1rem;
+		}
+
+		.recipe-title {
+			font-size: 2.8rem;
+			font-weight: 700;
+			color: #2c3e50;
+			margin-bottom: 0.5rem;
+		}
+
+		.recipe-author {
+			font-size: 1rem;
+			color: #7f8c8d;
+			margin-bottom: 1rem;
+		}
+
+		.recipe-meta {
+			font-size: 0.9rem;
+			color: #666;
+		}
+        
+        .section-title {
+			font-size: 1.8rem;
+			font-weight: 600;
+			color: #34495e;
+			margin-bottom: 1.5rem;
+			border-bottom: 2px solid #e74c3c;
+			padding-bottom: 0.5rem;
+			display: inline-block;
+		}
+        
+		.ingredients-card {
+			display: grid;
+			grid-template-columns: 2fr 1fr;
+			gap: 2rem;
+			background: #fdfdfd;
+			padding: 2rem;
+			border-radius: 8px;
+			border: 1px solid #eee;
+            margin-bottom: 2rem;
+		}
+
+		.recipe-main-image img {
+			width: 100%;
+			border-radius: 8px;
+			object-fit: cover;
+		}
+
+		.ingredient-columns {
+			display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+		}
+
+		.ingredient-group .group-name {
+			font-weight: 600;
+			color: #2c3e50;
+			margin-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 0.5rem;
+		}
+
+		.ingredient-group ul {
+			list-style: none;
+			padding-left: 0;
+		}
+
+		.ingredient-group li {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 0.5rem;
+			font-size: 0.95rem;
+		}
+
+        .ingredient-name {
+            flex-basis: 60%;
+        }
+
+        .ingredient-amount {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .ingredient-amount select {
+            width: 100%;
+            padding: 0.25rem;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+		.stage-group {
+			margin-bottom: 1.5rem;
+		}
+
+		.stage-group summary {
+			font-size: 1.4rem;
+			font-weight: 600;
+			cursor: pointer;
+			padding: 0.5rem;
+			background: #f7f7f7;
+			border-radius: 4px;
+            color: #2c3e50;
+		}
+
+		.steps-list {
+			padding-left: 1.5rem;
+			margin-top: 1rem;
+		}
+        
+        .step {
+            margin-bottom: 1.5rem;
+        }
+
+		.step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+			margin-bottom: 0.5rem;
+		}
+
+		.step-title {
+			font-size: 1.1rem;
+			font-weight: 600;
+            color: #34495e;
+            margin-block-start: 0;
+            margin-block-end: 0;
+		}
+        
+        .step-duration {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+		.step-description {
+			color: #555;
+            line-height: 1.7;
+		}
+        
+        .step-description p {
+            margin-bottom: 0.5rem;
+        }
+	</style>
+</Layout>
