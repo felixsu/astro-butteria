@@ -50,7 +50,7 @@ on call success, render it in **grid** style. each grid element to contain infor
 2. name
 3. servingSize
 
-##### Task 1.3 - Build recipe detail page and call recipe endpiont
+##### Task 1.3 - Build recipe detail page and call recipe endpiont [Done ✅]
 
 Recipe endpoint: `/api/recipe/:documentId`
 
@@ -68,5 +68,9 @@ From top to bottom
     * group the step based on its stage. Each stage is displayed inside collapsable element
     * each title is rendered as heading and have duration on the end right side
     * below the title is description that rendered in markdown format
+
+##### Task 1.4 - Create not found page
+
+define not found page into route `/404`. On this page, show `./public/not_found.png` image at the center of the screen. Above the image, print text "Whoops, food not found". Below the image, let user to back to `/` route which is index.astro page. Ensure the content of the page has center alignment both horizontally and vertically.
 
 
