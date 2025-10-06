@@ -29,7 +29,7 @@ console.log(recipes, 'recipes');
 			  {
 				recipes.map((recipe) => (
 				  <article class="recipe-card">
-					<a href={`/recipes/${recipe.name}/`} class="recipe-link">
+					<a href={`/recipes/${recipe.documentId}/`} class="recipe-link">
 					  <div class="recipe-image">
 						<img 
 						  src={recipe.mainDisplay?.url || recipe.mainDisplay?.formats?.medium?.url || '/placeholder_pastry.png'} 
