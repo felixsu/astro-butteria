@@ -73,7 +73,9 @@ const groupedSteps = recipe.steps.reduce((acc, step) => {
                                                 <li>
                                                     <span class="ingredient-name">{ingredient.name}</span>
                                                     <span class="ingredient-amount">
-                                                        {ingredient.amount.length > 1 ? (
+                                                        {
+                                                        ingredient.amount.length == 0 ? `Approx` :
+                                                        ingredient.amount.length > 1 ? (
                                                             <select>
                                                                 {ingredient.amount.map(amount => (
                                                                     <option>{amount.value} {ingredient.unit} ({amount.level})</option>
