@@ -1,5 +1,14 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../../layouts/Layout.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: 'en' } },
+    { params: { locale: 'id-ID' } },
+  ];
+}
+
+const { locale } = Astro.params;
 ---
 
 <Layout title="404: Not Found">
@@ -7,7 +16,7 @@ import Layout from '../layouts/Layout.astro';
     <div class="content-wrapper">
       <p class="message">Whoops, food not found</p>
       <img src="/not_found.png" alt="Not Found" class="not-found-image" />
-      <a href="/" class="home-link">Go back home</a>
+      <a href={`/${locale}/home`} class="home-link">Go back home</a>
     </div>
   </div>
 </Layout>

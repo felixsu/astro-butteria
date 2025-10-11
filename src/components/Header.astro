@@ -14,7 +14,7 @@ const logoUrl = logo?.formats?.thumbnail?.url || '';
     <div class="container">
         <div class="logo-container">
             {logoUrl && <img src={logoUrl} alt={siteName} class="logo" />}
-            <a href="/" class="site-name">{ siteName }</a>
+            <a href={`/${Astro.params.locale}/home`} class="site-name">{ siteName }</a>
         </div>
         <nav>
             <ul>

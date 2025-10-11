@@ -78,11 +78,11 @@ define not found page into route `/404`. On this page, show `./public/not_found.
 
 Concept: The page consist of header with logo and title on the left and menu in the right. Below the header, render items according to the type. By default, it render all items with pagination in the bottom. Menu consist of "cake", "bread", when user click menu, it shows only items according to the type. Currently type is only bread and cake. When user click the item, show a dialog where user can select the size, quantity, and click "Ask about it" button. "Ask about it" button currently is do nothing.
 
-#### Task 2.1 - Create locale support
+#### Task 2.1 - Create locale support [Done ✅]
 
 On the router, add locale path as the first path. Currently the locale is only `id-ID` or `en`. Currently the path has nothing to do with the content, default to `id-ID`. Remember to also adapt `/recipes` and `recipes/<id>` routing. Impact of the locale feature is, now when calling Strapi API such as in `pages/recipes.astro`, add header locale equal to the locale value in the path.
 
-#### Task 2.2 - Create header component
+#### Task 2.2 - Create header component [Done ✅]
 
 Create header with logo and title on the left. Logo is using `public/butteria.png` and title is `Butteria`. On the right, put Menu according to `GET /api/global` with query param: `populate[0]=menu`, `populate[1]=logo`, `populate[2]=favicon`, and locale. Locale is the first path of the page, At the most right, have language selector dropdown, the selector is English and Indonesia. Have country flag icon on it.
 
@@ -102,11 +102,11 @@ From that response:
 
 This header to be shown in every page! Highlight the active menu as well.
 
-#### Task 2.3 - Change locale on language button selected
+#### Task 2.3 - Change locale on language button selected [Done ✅]
 
 On the first load, read the locale from the path and determine the right language in the header dropdown. Also, when user change the language, reload the page and change the locale in the path accordingly.
 
-#### Task 2.4 - Load the content of items in the home page
+#### Task 2.4 - Load the content of items in the home page [Done ✅]
 
 Make /home as landing page if user doesn't select any route when open the page. Use static route for this page, show content of GET `api/display-windows/`. Include query param:
 

@@ -23,13 +23,13 @@ export async function getStaticPaths() {
 const { locale, documentId } = Astro.params;
 
 if (!documentId || !locale) {
-    return Astro.redirect('/404');
+    return Astro.redirect(`/${locale || 'en'}/404`);
 }
 
 const recipe = await getRecipe(documentId, locale);
 
 if (!recipe) {
-    return Astro.redirect('/404');
+    return Astro.redirect(`/${locale}/404`);
 }
 
 const groupedSteps = recipe.steps.reduce((acc, step) => {
