@@ -2,12 +2,12 @@
 import { getAllRecipes } from '../../lib/strapi';
 import type { Recipe } from '../../interfaces/recipe';
 import Layout from '../../layouts/Layout.astro';
+import { supportedLocales } from '../../config';
 
 export function getStaticPaths() {
-  return [
-    { params: { locale: 'en' } },
-    { params: { locale: 'id-ID' } },
-  ];
+  return supportedLocales.map((locale) => ({
+    params: { locale },
+  }));
 }
 
 const { locale } = Astro.params;

@@ -1,8 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-const supportedLocales = ['en', 'id-ID'];
-const defaultLocale = 'id-ID';
+import { supportedLocales, defaultLocale } from '../config';
 
 const { pathname } = Astro.url;
 const pathSegments = pathname.split('/').filter(Boolean);

@@ -3,12 +3,12 @@ import Layout from '../../../layouts/Layout.astro';
 import { getAllRecipes, getRecipe } from '../../../lib/strapi';
 import type { Recipe } from '../../../interfaces/recipe';
 import { marked } from 'marked';
+import { defaultLocale, supportedLocales } from "../../../config";
 
 export async function getStaticPaths() {
-    const locales = ['en', 'id-ID'];
     const paths = [];
 
-    for (const locale of locales) {
+    for (const locale of supportedLocales) {
         const recipes = await getAllRecipes(locale);
         for (const recipe of recipes) {
             paths.push({

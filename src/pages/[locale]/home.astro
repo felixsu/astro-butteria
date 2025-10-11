@@ -1,12 +1,12 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getDisplayWindows } from '../../lib/strapi';
+import { supportedLocales } from '../../config';
 
 export function getStaticPaths() {
-  return [
-    { params: { locale: 'en' } },
-    { params: { locale: 'id-ID' } },
-  ];
+  return supportedLocales.map((locale) => ({
+    params: { locale },
+  }));
 }
 
 const { locale } = Astro.params;

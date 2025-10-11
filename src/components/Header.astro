@@ -1,6 +1,7 @@
 ---
 import type { Global } from "../interfaces";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
+import { defaultLocale } from "../config";
 
 interface Props {
     globalData: Global;
@@ -9,18 +10,19 @@ interface Props {
 const { globalData } = Astro.props;
 const { siteName, logo, menu } = globalData;
 const logoUrl = logo?.formats?.thumbnail?.url || '';
+const locale = Astro.params.locale || defaultLocale;
 ---
 <header>
     <div class="container">
         <div class="logo-container">
             {logoUrl && <img src={logoUrl} alt={siteName} class="logo" />}
-            <a href={`/${Astro.params.locale}/home`} class="site-name">{ siteName }</a>
+            <a href={`/${locale}/home`} class="site-name">{ siteName }</a>
         </div>
         <nav>
             <ul>
                 {menu.map(item => (
                     <li>
-                        <a href={`/${Astro.params.locale}/${item.path}`}>{item.name}</a>
+                        <a href={`/${locale}/${item.path}`}>{item.name}</a>
                     </li>
                 ))}
             </ul>
