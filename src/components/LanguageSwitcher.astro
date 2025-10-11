@@ -1,0 +1,33 @@
+---
+const { locale } = Astro.params;
+const languages = [
+    { code: 'en', name: 'English' },
+    { code: 'id-ID', name: 'Indonesia' },
+];
+---
+<div class="language-switcher">
+    <select id="locale-switcher">
+        {languages.map(lang => (
+            <option value={lang.code} selected={lang.code === locale}>
+                {lang.name}
+            </option>
+        ))}
+    </select>
+</div>
+
+<script>
+    document.getElementById('locale-switcher')?.addEventListener('change', (e) => {
+        const newLocale = (e.target as HTMLSelectElement).value;
+        const pathParts = window.location.pathname.split('/');
+        pathParts[1] = newLocale;
+        window.location.pathname = pathParts.join('/');
+    });
+</script>
+
+<style>
+    .language-switcher select {
+        padding: 0.5rem;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+</style>

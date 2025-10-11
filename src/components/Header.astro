@@ -1,0 +1,74 @@
+---
+import type { Global } from "../interfaces";
+import LanguageSwitcher from "./LanguageSwitcher.astro";
+
+interface Props {
+    globalData: Global;
+}
+
+const { globalData } = Astro.props;
+const { siteName, logo, menu } = globalData;
+const logoUrl = logo?.formats?.thumbnail?.url || '';
+---
+<header>
+    <div class="container">
+        <div class="logo-container">
+            {logoUrl && <img src={logoUrl} alt={siteName} class="logo" />}
+            <a href="/" class="site-name">{ siteName }</a>
+        </div>
+        <nav>
+            <ul>
+                {menu.map(item => (
+                    <li>
+                        <a href={`/${Astro.params.locale}/${item.path}`}>{item.name}</a>
+                    </li>
+                ))}
+            </ul>
+        </nav>
+        <LanguageSwitcher />
+    </div>
+</header>
+
+<style>
+    header {
+        background: #fff;
+        padding: 1rem 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    .logo-container {
+        display: flex;
+        align-items: center;
+    }
+    .logo {
+        height: 50px;
+        margin-right: 1rem;
+    }
+    .site-name {
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-decoration: none;
+        color: #333;
+    }
+    nav ul {
+        list-style: none;
+        display: flex;
+        gap: 1.5rem;
+    }
+    nav a {
+        text-decoration: none;
+        color: #555;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+    nav a:hover {
+        color: #e74c3c;
+    }
+</style>

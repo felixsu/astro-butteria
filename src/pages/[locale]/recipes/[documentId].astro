@@ -1,38 +1,32 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import fetchApi from '../../lib/strapi';
-import type { Recipe } from '../../interfaces/recipe';
+import Layout from '../../../layouts/Layout.astro';
+import { getAllRecipes, getRecipe } from '../../../lib/strapi';
+import type { Recipe } from '../../../interfaces/recipe';
 import { marked } from 'marked';
 
 export async function getStaticPaths() {
-    const recipes = await fetchApi<Pick<Recipe, 'documentId'>[]>({
-        endpoint: 'recipes',
-        wrappedByKey: 'data',
-    });
+    const locales = ['en', 'id-ID'];
+    const paths = [];
 
-    return recipes.map(recipe => ({
-        params: { documentId: recipe.documentId }
-    }));
+    for (const locale of locales) {
+        const recipes = await getAllRecipes(locale);
+        for (const recipe of recipes) {
+            paths.push({
+                params: { locale, documentId: recipe.documentId }
+            });
+        }
+    }
+
+    return paths;
 }
 
-const { documentId } = Astro.params;
+const { locale, documentId } = Astro.params;
 
-if (!documentId) {
+if (!documentId || !locale) {
     return Astro.redirect('/404');
 }
 
-const recipe = await fetchApi<Recipe>({
-    endpoint: `recipes/${documentId}`,
-    query: {
-        'populate[0]': 'ingredientGroups.ingredients.amount',
-        'populate[1]': 'steps',
-        'populate[2]': 'author',
-        'populate[3]': 'servingSize',
-        'populate[4]': 'mainDisplay'
-    },
-    wrappedByKey: 'data',
-    wrappedByList: false,
-});
+const recipe = await getRecipe(documentId, locale);
 
 if (!recipe) {
     return Astro.redirect('/404');

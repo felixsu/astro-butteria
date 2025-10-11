@@ -1,0 +1,58 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getDisplayWindows } from '../../lib/strapi';
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: 'en' } },
+    { params: { locale: 'id-ID' } },
+  ];
+}
+
+const { locale } = Astro.params;
+const displayWindows = await getDisplayWindows(locale as string);
+---
+
+<Layout title="Butteria - Home">
+    <div class="container">
+        <div class="product-grid">
+            {displayWindows.map(item => (
+                <div class="product-card">
+                    <img src={item.displayMain.formats.small!.url} alt={item.name} />
+                    <h3>{item.name}</h3>
+                    <p>{item.description}</p>
+                    <div class="prices">
+                        {item.prices.map(price => (
+                            <span>{price.name}: {price.value}</span>
+                        ))}
+                    </div>
+                </div>
+            ))}
+        </div>
+    </div>
+</Layout>
+
+<style>
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    .product-card {
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+    }
+    .product-card img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+    }
+    .prices {
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+</style>

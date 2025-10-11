@@ -1,7 +1,5 @@
 ---
-import Layout from '../layouts/Layout.astro';
+// Redirect to default locale home page
+Astro.response.status = 302;
+Astro.response.headers.set('Location', '/id-ID/home');
 ---
-
-<Layout title="Astro Main">
-	<h1>Astro Main</h1>
-</Layout>
