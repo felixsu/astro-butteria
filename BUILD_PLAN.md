@@ -56,21 +56,71 @@ Recipe endpoint: `/api/recipe/:documentId`
 
 On grid recipe element click from /recipes page, get it's `documentId` and go to URL `/recipes/:documentId`. Make documentId as slug, and render the html in this format:
 
-From top to bottom
-1. recipe name
-    * show in heading 1 format
-2. Ingredients section
-    * create a card row that can be expanded to contain the ingrendient
-    * on the right side, render `mainDisplay` image
-    * on the left side, build 2 column to contain all ingredient. the ingredients stored inside `ingredientGroups`. Each ingredient object contains `groupName` and the actual ingredients. Igrendient has `name`, `unit` and `amount`. if `amount` is > 1 element, render it with dropdown of the `level`. groupName is highlighted in the UI.
-3. Step section
-    * each step section has stage, title, duration in minutes, and description.
-    * group the step based on its stage. Each stage is displayed inside collapsable element
-    * each title is rendered as heading and have duration on the end right side
-    * below the title is description that rendered in markdown format
+From top to bottom:
 
-##### Task 1.4 - Create not found page
+1. recipe name
+    - show in heading 1 format
+2. Ingredients section
+    - create a card row that can be expanded to contain the ingrendient
+    - on the right side, render `mainDisplay` image
+    - on the left side, build 2 column to contain all ingredient. the ingredients stored inside `ingredientGroups`. Each ingredient object contains `groupName` and the actual ingredients. Igrendient has `name`, `unit` and `amount`. if `amount` is > 1 element, render it with dropdown of the `level`. groupName is highlighted in the UI.
+3. Step section
+    - each step section has stage, title, duration in minutes, and description.
+    - group the step based on its stage. Each stage is displayed inside collapsable element
+    - each title is rendered as heading and have duration on the end right side
+    - below the title is description that rendered in markdown format
+
+##### Task 1.4 - Create not found page [Done ✅]
 
 define not found page into route `/404`. On this page, show `./public/not_found.png` image at the center of the screen. Above the image, print text "Whoops, food not found". Below the image, let user to back to `/` route which is index.astro page. Ensure the content of the page has center alignment both horizontally and vertically.
 
+### Task 2 - Build homepage as landing page for the users
 
+Concept: The page consist of header with logo and title on the left and menu in the right. Below the header, render items according to the type. By default, it render all items with pagination in the bottom. Menu consist of "cake", "bread", when user click menu, it shows only items according to the type. Currently type is only bread and cake. When user click the item, show a dialog where user can select the size, quantity, and click "Ask about it" button. "Ask about it" button currently is do nothing.
+
+#### Task 2.1 - Create locale support
+
+On the router, add locale path as the first path. Currently the locale is only `id-ID` or `en`. Currently the path has nothing to do with the content, default to `id-ID`. Remember to also adapt `/recipes` and `recipes/<id>` routing. Impact of the locale feature is, now when calling Strapi API such as in `pages/recipes.astro`, add header locale equal to the locale value in the path.
+
+#### Task 2.2 - Create header component
+
+Create header with logo and title on the left. Logo is using `public/butteria.png` and title is `Butteria`. On the right, put Menu according to `GET /api/global` with query param: `populate[0]=menu`, `populate[1]=logo`, `populate[2]=favicon`, and locale. Locale is the first path of the page, At the most right, have language selector dropdown, the selector is English and Indonesia. Have country flag icon on it.
+
+GET `api/global` return payload with structure:
+
+```json
+{"data":{"id":1,"documentId":"az3d3m4czw2brvt5nah82dzj","siteName":"Butteria","siteDescription":"Felix and Wanti bakery house","createdAt":"2025-10-02T10:44:37.438Z","updatedAt":"2025-10-11T08:49:14.855Z","publishedAt":"2025-10-11T08:49:14.585Z","locale":"en","menu":[{"id":1,"name":"Home","path":"home"},{"id":2,"name":"Cake","path":"cake"},{"id":3,"name":"Bread","path":"bread"},{"id":4,"name":"About","path":"about"}],"logo":{"id":14,"documentId":"gxhdifwwx7vco3zqkzhzowuh","name":"Butteria.png","alternativeText":null,"caption":null,"width":512,"height":512,"formats":{"small":{"ext":".png","url":"https://skilled-boot-bde5c2b63a.media.strapiapp.com/small_Butteria_66c2f5850e.png","hash":"small_Butteria_66c2f5850e","mime":"image/png","name":"small_Butteria.png","path":null,"size":89.74,"width":500,"height":500,"sizeInBytes":89742},"thumbnail":{"ext":".png","url":"https://skilled-boot-bde5c2b63a.media.strapiapp.com/thumbnail_Butteria_66c2f5850e.png","hash":"thumbnail_Butteria_66c2f5850e","mime":"image/png","name":"thumbnail_Butteria.png","path":null,"size":18.29,"width":156,"height":156,"sizeInBytes":18287}},"hash":"Butteria_66c2f5850e","ext":".png","mime":"image/png","size":16.3,"url":"https://skilled-boot-bde5c2b63a.media.strapiapp.com/Butteria_66c2f5850e.png","previewUrl":null,"provider":"strapi-provider-upload-strapi-cloud","provider_metadata":null,"createdAt":"2025-10-11T08:44:59.778Z","updatedAt":"2025-10-11T08:44:59.778Z","publishedAt":"2025-10-11T08:44:59.778Z"},"favicon":{"id":7,"documentId":"eu873kezwhixfs0nkkl52bqz","name":"logo.jpg","alternativeText":null,"caption":null,"width":640,"height":640,"formats":{"small":{"ext":".jpg","url":"https://skilled-boot-bde5c2b63a.media.strapiapp.com/small_logo_c60384587e.jpg","hash":"small_logo_c60384587e","mime":"image/jpeg","name":"small_logo.jpg","path":null,"size":17.11,"width":500,"height":500,"sizeInBytes":17111},"thumbnail":{"ext":".jpg","url":"https://skilled-boot-bde5c2b63a.media.strapiapp.com/thumbnail_logo_c60384587e.jpg","hash":"thumbnail_logo_c60384587e","mime":"image/jpeg","name":"thumbnail_logo.jpg","path":null,"size":3.38,"width":156,"height":156,"sizeInBytes":3382}},"hash":"logo_c60384587e","ext":".jpg","mime":"image/jpeg","size":23.79,"url":"https://skilled-boot-bde5c2b63a.media.strapiapp.com/logo_c60384587e.jpg","previewUrl":null,"provider":"strapi-provider-upload-strapi-cloud","provider_metadata":null,"createdAt":"2025-10-02T10:52:36.236Z","updatedAt":"2025-10-02T10:52:36.236Z","publishedAt":"2025-10-02T10:52:36.236Z"}},"meta":{}}
+```
+
+From that response:
+
+- Use siteName as the Title
+- Use siteDescription as sub title of the header
+- Use `menu` object to render the menu in the header, use `menu.name` as the text, and `menu.path` as the value that we will use as URL path to open new page.
+- Use `logo.formats.small.url` as image source as Logo in the header.
+- Use `favicon.formats.small.url` as image source for website favicon.
+
+This header to be shown in every page! Highlight the active menu as well.
+
+#### Task 2.3 - Change locale on language button selected
+
+On the first load, read the locale from the path and determine the right language in the header dropdown. Also, when user change the language, reload the page and change the locale in the path accordingly.
+
+#### Task 2.4 - Load the content of items in the home page
+
+Make /home as landing page if user doesn't select any route when open the page. Use static route for this page, show content of GET `api/display-windows/`. Include query param:
+
+```json
+{
+    "populate[0]": "prices",
+    "populate[1]": "displayMain",
+    "populate[1]": "physicalInformations",
+    "locale": "en" //depends on the locale in the path, can be "en" or "id-ID"
+}
+```
+
+response payload is:
+
+```json
+{"data":[{"id":4,"documentId":"ac7volykz4ee84dady1oiw8l","name":"Shrimp Gratin Bread","description":"A steaming, savory delicacy emerges from the heat: the **Shrimp Gratin Bread**. It begins with a robust, crusty loaf, its edge perfectly toasted and darkened, forming a strong cradle for the decadent toppings. A rich, molten cheese sauce blankets the bread, spilling down the sides in thick, irresistible drips. Nestled into this creamy expanse are succulent, pink shrimp, perfectly cooked and glistening. A final dusting of **golden breadcrumbs** creates a delicious, caramelized crust, promising a satisfying crunch. The air above the dish shimmers with rising steam, a powerful visual cue that this appetizer is piping hot, fresh, and ready to be devoured.","isAvailable":true,"createdAt":"2025-10-04T10:46:33.881Z","updatedAt":"2025-10-10T14:32:10.420Z","publishedAt":"2025-10-10T14:32:10.695Z","prices":[{"id":10,"name":"6 pcs","value":100000},{"id":11,"name":"9 pcs","value":120000},{"id":12,"name":"12 pcs","value":150000}],"displayMain":{"id":10,"documentId":"zbk0hngqizdhofwgut59njpd","name":"shrimp-gratin-bread_main.png","alternativeText":null,"caption":null,"width":1024,"height":1024,"formats":{"large":{"ext":".png","url":"https://skilled-boot-bde5c2b63a.media.strapiapp.com/large_shrimp_gratin_bread_main_6cd406b5ee.png","hash":"large_shrimp_gratin_bread_main_6cd406b5ee","mime":"image/png","name":"large_shrimp-gratin-bread_main.png","path":null,"size":2053.39,"width":1000,"height":1000,"sizeInBytes":2053394},"small":{"ext":".png","url":"https://skilled-boot-bde5c2b63a.media.strapiapp.com/small_shrimp_gratin_bread_main_6cd406b5ee.png","hash":"small_shrimp_gratin_bread_main_6cd406b5ee","mime":"image/png","name":"small_shrimp-gratin-bread_main.png","path":null,"size":573.08,"width":500,"height":500,"sizeInBytes":573081},"medium":{"ext":".png","url":"https://skilled-boot-bde5c2b63a.media.strapiapp.com/medium_shrimp_gratin_bread_main_6cd406b5ee.png","hash":"medium_shrimp_gratin_bread_main_6cd406b5ee","mime":"image/png","name":"medium_shrimp-gratin-bread_main.png","path":null,"size":1243.08,"width":750,"height":750,"sizeInBytes":1243082},"thumbnail":{"ext":".png","url":"https://skilled-boot-bde5c2b63a.media.strapiapp.com/thumbnail_shrimp_gratin_bread_main_6cd406b5ee.png","hash":"thumbnail_shrimp_gratin_bread_main_6cd406b5ee","mime":"image/png","name":"thumbnail_shrimp-gratin-bread_main.png","path":null,"size":63.88,"width":156,"height":156,"sizeInBytes":63875}},"hash":"shrimp_gratin_bread_main_6cd406b5ee","ext":".png","mime":"image/png","size":455.89,"url":"https://skilled-boot-bde5c2b63a.media.strapiapp.com/shrimp_gratin_bread_main_6cd406b5ee.png","previewUrl":null,"provider":"strapi-provider-upload-strapi-cloud","provider_metadata":null,"createdAt":"2025-10-04T08:46:39.503Z","updatedAt":"2025-10-04T08:46:39.503Z","publishedAt":"2025-10-04T08:46:39.503Z"},"physicalInformations":[{"id":11,"name":"6 Pcs","ratio":1,"weight":null,"width":null,"length":null,"height":null,"diameter":6},{"id":12,"name":"9 Pcs","ratio":1.5,"weight":null,"width":null,"length":null,"height":null,"diameter":6},{"id":13,"name":"12 Pcs","ratio":2,"weight":null,"width":null,"length":null,"height":null,"diameter":null}]}],"meta":{"pagination":{"page":1,"pageSize":25,"pageCount":1,"total":1}}}
+```
