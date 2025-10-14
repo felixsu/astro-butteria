@@ -21,7 +21,7 @@ const recipes = await getAllRecipes(locale as string);
 		  {
 			recipes.map((recipe) => (
 			  <article class="recipe-card">
-				<a href={`/${locale}/recipes/${recipe.documentId}/`} class="recipe-link">
+				<a href={`/${locale}/recipes/${recipe.documentId}`} class="recipe-link">
 				  <div class="recipe-image">
 					<img 
 					  src={recipe.mainDisplay?.url || recipe.mainDisplay?.formats?.medium?.url || '/placeholder_pastry.png'} 
